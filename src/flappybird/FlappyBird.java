@@ -136,6 +136,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 				menuCount--;
 				menuPanel.updateMenuPosition(menuCount);
 			}
+			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+				System.out.println("has elegido "+menuCount);
+			}
 			
 			System.out.println("Menu: "+menuCount);
 		}else {
