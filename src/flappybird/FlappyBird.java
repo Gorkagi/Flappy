@@ -10,14 +10,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
+import java.io.*;
+import sun.audio.*;
+import java.io.FileInputStream;
+import javazoom.jl.player.Player;
 
 /**
  *
@@ -130,16 +132,20 @@ public class FlappyBird implements ActionListener, KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
+		 
 		if(inMenu) {
 			if(e.getKeyCode() == KeyEvent.VK_DOWN && menuCount != 4) {
 				menuCount++;
+				reproducir("audio/MenuMove.mp3");
 				menuPanel.updateMenuPosition(menuCount);
 			}
 			if(e.getKeyCode() == KeyEvent.VK_UP && menuCount > 0) {
 				menuCount--;
+				reproducir("audio/MenuMove.mp3");
 				menuPanel.updateMenuPosition(menuCount);
 			}
 			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+				reproducir("audio/MenuSelect.mp3");
 				switch (menuCount) {
 				case 0:
 					go();
@@ -174,4 +180,14 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public boolean paused() {
 		return paused;
 	}
+	
+	public void reproducir(String mp3) {
+		try{
+			FileInputStream archivo = new FileInputStream(mp3);
+			Player playMP3 = new Player(archivo);
+			playMP3.play();
+		} catch(Exception exc){
+			exc.printStackTrace();
+		} 
+	} 
 }
