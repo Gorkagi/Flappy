@@ -49,7 +49,6 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		frame.addKeyListener(this);
 
 		paused = true;
 
@@ -119,7 +118,10 @@ public class FlappyBird implements ActionListener, KeyListener {
 				paused = true;
 			}
 		} else if(inMenu) {
-			menu();
+			t.stop();
+			frame.remove(panel);
+			
+			frame.repaint();
 		}
 	}
 
