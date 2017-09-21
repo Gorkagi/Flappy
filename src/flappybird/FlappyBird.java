@@ -37,11 +37,10 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 	private boolean paused;
 	private boolean inMenu;
-	
+
 	private int menuCount = 0;
 
 	public void go() {
-		frame = new JFrame("Flappy Bird");
 		bird = new Bird();
 		rects = new ArrayList<Rectangle>();
 		panel = new GamePanel(this, bird, rects);
@@ -59,8 +58,10 @@ public class FlappyBird implements ActionListener, KeyListener {
 	}
 
 	public void menu() {
-		frame = new JFrame("Flappy Bird");
-		frame.setResizable(false);
+		if(frame == null) {
+			frame = new JFrame("Flappy Bird");
+			frame.setResizable(false);
+		}
 		bird = new Bird();
 		rects = new ArrayList<Rectangle>();
 		menuPanel = new MenuPanel();
@@ -118,7 +119,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 				paused = true;
 			}
 		} else if(inMenu) {
-
+			menu();
 		}
 	}
 
@@ -137,11 +138,22 @@ public class FlappyBird implements ActionListener, KeyListener {
 				menuPanel.updateMenuPosition(menuCount);
 			}
 			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
-				System.out.println("has elegido "+menuCount);
+				switch (menuCount) {
+				case 0:
+					go();
+					break;
+
+				default:
+					break;
+				}
+				inMenu = false;
 			}
-			
-			System.out.println("Menu: "+menuCount);
+
 		}else {
+			if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				paused = true;
+				inMenu = true;
+			}
 			if(e.getKeyCode()==KeyEvent.VK_UP) {
 				bird.jump();
 			}
