@@ -31,8 +31,8 @@ public class MenuPanel extends JPanel {
     public void updateMenuPosition(int position) {
     	System.out.println("Menu Position Updated to "+position);
     }
-    
-    @Override
+
+	@Override
     public void paintComponent(Graphics g) {
             g.setFont(titleFont);
             g.drawImage(menuBack, 0, 0, 600, 600, null);
