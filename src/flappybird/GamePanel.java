@@ -29,7 +29,7 @@ public class GamePanel extends JPanel {
     private Font scoreFont, pauseFont;
     public static final Color bg = new Color(0, 158, 158);
     public static final int PIPE_W = 50, PIPE_H = 30;
-    private Image pipeHead, pipeLength;
+    private Image pipeHead, pipeLength, background;
 
     public GamePanel(FlappyBird fb, Bird bird, ArrayList<Rectangle> rects) {
         this.fb = fb;
@@ -41,15 +41,16 @@ public class GamePanel extends JPanel {
         try {
         	pipeHead = ImageIO.read(new File("78px-Pipe.png"));
         	pipeLength = ImageIO.read(new File("pipe_part.png"));
+        	background = ImageIO.read(new File("GameBack.png"));
         }
         catch(IOException e) {
             e.printStackTrace();
         }
     }
+    
     @Override
     public void paintComponent(Graphics g) {
-        g.setColor(bg);
-        g.fillRect(0,0,FlappyBird.WIDTH,FlappyBird.HEIGHT);
+        g.drawImage(background, 0, 0, 600, 600, null);
         bird.update(g);
         g.setColor(Color.RED);
         for(Rectangle r : rects) {
