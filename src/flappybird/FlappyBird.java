@@ -19,6 +19,8 @@ import javax.swing.Timer;
 import java.io.*;
 import sun.audio.*;
 import java.io.FileInputStream;
+
+import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
 
 /**
@@ -38,6 +40,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private Timer t;
 
 	private boolean paused;
+	private boolean pauseMusic = false;
 	private boolean inMenu;
 
 	private int menuCount = 0;
@@ -59,6 +62,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	}
 
 	public void menu() {
+		
 		if(frame == null) {
 			frame = new JFrame("Flappy Bird");
 			frame.setResizable(false);
@@ -74,6 +78,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		frame.addKeyListener(this);
+		reproducir("audio/MenuTema.mp3");
 	}
 
 	public static void main(String[] args) {
@@ -82,6 +87,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		
 		panel.repaint();
 		if(!paused) {
 			bird.physics();
@@ -122,7 +128,6 @@ public class FlappyBird implements ActionListener, KeyListener {
 		} else if(inMenu) {
 			t.stop();
 			frame.remove(panel);
-			
 			frame.repaint();
 		}
 	}
@@ -134,6 +139,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public void keyPressed(KeyEvent e) {
 		 
 		if(inMenu) {
+			pauseMusic = false;
 			if(e.getKeyCode() == KeyEvent.VK_DOWN && menuCount != 4) {
 				menuCount++;
 				reproducir("audio/MenuMove.mp3");
@@ -148,6 +154,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 				reproducir("audio/MenuSelect.mp3");
 				switch (menuCount) {
 				case 0:
+					pauseMusic = true;
 					go();
 					break;
 				case 4:
@@ -187,8 +194,22 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public void reproducir(String mp3) {
 		try{
 			FileInputStream archivo = new FileInputStream(mp3);
-			Player playMP3 = new Player(archivo);
-			playMP3.play();
+			final Player playMP3 = new Player(archivo);
+			new Thread() {
+			      public void run() {
+			         try {
+			            while (true) {
+			               if (!pauseMusic) {
+			                  if (!playMP3.play(1)) {
+			                
+			                  }  
+			               }
+			            }
+			         } catch (JavaLayerException e) {
+			            e.printStackTrace();
+			         }
+			      }
+			   }.start();
 		} catch(Exception exc){
 			exc.printStackTrace();
 		} 

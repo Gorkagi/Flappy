@@ -32,7 +32,6 @@ public class MenuPanel extends JPanel {
 	}
 
 	public void updateMenuPosition(int position) {
-		System.out.println("Menu Position Updated to "+position);
 		menuPos = position;
 		this.repaint();
 	}
