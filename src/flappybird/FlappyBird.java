@@ -35,6 +35,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private JFrame frame;
 	private JPanel panel;
 	private MenuPanel menuPanel;
+	private RankingPanel rankingPanel;
 	private ArrayList<Rectangle> rects;
 	private int time, scroll;
 	private Timer t;
@@ -42,6 +43,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private boolean paused;
 	private boolean pauseMusic = false;
 	private boolean inMenu;
+	private boolean inGame = false;
 
 	private int menuCount = 0;
 
@@ -59,6 +61,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 		t = new Timer(1000/FPS, this);
 		t.start();
+		inGame = true;
 	}
 
 	public void menu() {
@@ -66,6 +69,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 		if(frame == null) {
 			frame = new JFrame("Flappy Bird");
 			frame.setResizable(false);
+			frame.addKeyListener(this);
 		}
 		bird = new Bird();
 		rects = new ArrayList<Rectangle>();
@@ -77,8 +81,26 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
-		frame.addKeyListener(this);
-		reproducir("audio/MenuTema.mp3");
+		//reproducir("audio/MenuTema.mp3");
+	}
+	
+	public void ranking() {
+		if(frame == null) {
+			frame = new JFrame("Flappy Bird");
+			frame.setResizable(false);
+		}
+		bird = new Bird();
+		rects = new ArrayList<Rectangle>();
+		rankingPanel = new RankingPanel();
+		frame.add(rankingPanel);
+		frame.remove(menuPanel);
+		frame.repaint();
+		
+		inMenu = false;
+
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
 	}
 
 	public static void main(String[] args) {
@@ -157,6 +179,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 					pauseMusic = true;
 					go();
 					break;
+				case 1:
+					ranking();
+					break;
 				case 4:
 					frame.dispose();
 					break;
@@ -167,7 +192,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 				inMenu = false;
 			}
 
-		}else {
+		}else if (inGame){
 			if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 				paused = true;
 				inMenu = true;
@@ -177,6 +202,16 @@ public class FlappyBird implements ActionListener, KeyListener {
 			}
 			else if(e.getKeyCode()==KeyEvent.VK_SPACE) {
 				paused = false;
+			}
+		} else {
+			if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+				frame.remove(rankingPanel);
+				frame.add(menuPanel);
+				frame.repaint();
+				inMenu = true;
+				//frame.removeAll();
+				//menu();
+				//frame.repaint();
 			}
 		}
 	}
