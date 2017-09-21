@@ -150,6 +150,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 				case 0:
 					go();
 					break;
+				case 4:
+					frame.dispose();
+					break;
 
 				default:
 					break;
