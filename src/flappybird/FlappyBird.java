@@ -29,7 +29,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 	private Bird bird;
 	private JFrame frame;
-	private JPanel panel;
+	private JPanel gamePanel;
 	private MenuPanel menuPanel;
 	private RankingPanel rankingPanel;
 	private InstructionsPanel instructionsPanel;
@@ -50,8 +50,11 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public void go() {
 		bird = new Bird();
 		rects = new ArrayList<Rectangle>();
-		panel = new GamePanel(this, bird, rects);
-		frame.add(panel);
+		gamePanel = new GamePanel(this, bird, rects);
+		
+		frame.remove(menuPanel);
+		frame.add(gamePanel);
+		frame.repaint();
 
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -62,6 +65,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 		t = new Timer(1000 / FPS, this);
 		t.start();
 		inGame = true;
+		inMenu = false;
 	}
 
 	public void menu() {
@@ -128,7 +132,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	@Override
 	public void actionPerformed(ActionEvent e) {
 
-		panel.repaint();
+		gamePanel.repaint();
 		if (!paused) {
 			bird.physics();
 			if (scroll % 90 == 0) {
@@ -168,8 +172,6 @@ public class FlappyBird implements ActionListener, KeyListener {
 			}
 		} else if (inMenu) {
 			t.stop();
-			frame.remove(panel);
-			frame.repaint();
 		}
 	}
 
@@ -207,7 +209,6 @@ public class FlappyBird implements ActionListener, KeyListener {
 					frame.dispose();
 					player.close();
 					break;
-
 				default:
 					break;
 				}
@@ -218,7 +219,13 @@ public class FlappyBird implements ActionListener, KeyListener {
 			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 				paused = true;
 				inMenu = true;
-				frame.remove(panel);
+				inGame = false;
+				frame.remove(gamePanel);
+				frame.add(menuPanel);
+				frame.repaint();
+				
+				player = new MusicPlayer(MAIN_THEME);
+				player.play();
 			}
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				bird.jump();
@@ -231,14 +238,18 @@ public class FlappyBird implements ActionListener, KeyListener {
 				if (inRanking) {
 					frame.remove(rankingPanel);
 					inRanking = false;
+					frame.add(menuPanel);
+					frame.repaint();
+					inMenu = true;
 				}
 				if(inInstructions) {
 					frame.remove(instructionsPanel);
 					inInstructions = false;
+					frame.add(menuPanel);
+					frame.repaint();
+					inMenu = true;
 				}
-				frame.add(menuPanel);
-				frame.repaint();
-				inMenu = true;
+				
 			}
 		}
 	}
