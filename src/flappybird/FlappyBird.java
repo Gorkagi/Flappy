@@ -32,6 +32,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private JPanel panel;
 	private MenuPanel menuPanel;
 	private RankingPanel rankingPanel;
+	private InstructionsPanel instructionsPanel;
 	private ArrayList<Rectangle> rects;
 	private int time, scroll;
 	private Timer t;
@@ -39,6 +40,8 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private boolean paused;
 	private boolean inMenu;
 	private boolean inGame = false;
+	private boolean inRanking = false;
+	private boolean inInstructions = false;
 
 	MusicPlayer player;
 
@@ -83,7 +86,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 	public void ranking() {
 		if (frame == null) {
-			frame = new JFrame("Flappy Bird");
+			frame = new JFrame("Flappy");
 			frame.setResizable(false);
 		}
 		rankingPanel = new RankingPanel();
@@ -92,11 +95,31 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.repaint();
 
 		inMenu = false;
+		inRanking = true;
 
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
+	
+	public void instructions() {
+		if (frame == null) {
+			frame = new JFrame("Flappy");
+			frame.setResizable(false);
+		}
+		instructionsPanel = new InstructionsPanel();
+		frame.remove(menuPanel);
+		frame.add(instructionsPanel);
+		frame.repaint();
+
+		inMenu = false;
+		inInstructions = true;
+
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+	
 
 	public static void main(String[] args) {
 		new FlappyBird().menu();
@@ -177,6 +200,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 				case 1:
 					ranking();
 					break;
+				case 2:
+					instructions();
+					break;
 				case 4:
 					frame.dispose();
 					player.close();
@@ -201,7 +227,15 @@ public class FlappyBird implements ActionListener, KeyListener {
 			}
 		} else {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				frame.remove(rankingPanel);
+				reproducir(SELECT_SOUND);
+				if (inRanking) {
+					frame.remove(rankingPanel);
+					inRanking = false;
+				}
+				if(inInstructions) {
+					frame.remove(instructionsPanel);
+					inInstructions = false;
+				}
 				frame.add(menuPanel);
 				frame.repaint();
 				inMenu = true;
