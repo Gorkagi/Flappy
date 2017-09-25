@@ -33,6 +33,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private MenuPanel menuPanel;
 	private RankingPanel rankingPanel;
 	private InstructionsPanel instructionsPanel;
+	private OptionsPanel optionsPanel;
 	private ArrayList<Rectangle> rects;
 	private int time, scroll;
 	private Timer t;
@@ -42,6 +43,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private boolean inGame = false;
 	private boolean inRanking = false;
 	private boolean inInstructions = false;
+	private boolean inOptions = false;
 
 	MusicPlayer player;
 
@@ -51,7 +53,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 		bird = new Bird();
 		rects = new ArrayList<Rectangle>();
 		gamePanel = new GamePanel(this, bird, rects);
-		
+
 		frame.remove(menuPanel);
 		frame.add(gamePanel);
 		frame.repaint();
@@ -105,7 +107,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+
 	public void instructions() {
 		if (frame == null) {
 			frame = new JFrame("Flappy");
@@ -123,7 +125,24 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+
+	public void options() {
+		if (frame == null) {
+			frame = new JFrame("Flappy");
+			frame.setResizable(false);
+		}
+		optionsPanel = new OptionsPanel();
+		frame.remove(menuPanel);
+		frame.add(optionsPanel);
+		frame.repaint();
+
+		inMenu = false;
+		inOptions = true;
+
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
 
 	public static void main(String[] args) {
 		new FlappyBird().menu();
@@ -182,7 +201,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public void keyPressed(KeyEvent e) {
 
 		if (inMenu) {
-			if (e.getKeyCode() == KeyEvent.VK_DOWN && menuCount != 4) {
+			if (e.getKeyCode() == KeyEvent.VK_DOWN && menuCount < 4) {
 				menuCount++;
 				reproducir(MOVE_SOUND);
 				menuPanel.updateMenuPosition(menuCount);
@@ -205,6 +224,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 				case 2:
 					instructions();
 					break;
+				case 3:
+					options();
+					break;
 				case 4:
 					frame.dispose();
 					player.close();
@@ -223,7 +245,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 				frame.remove(gamePanel);
 				frame.add(menuPanel);
 				frame.repaint();
-				
+
 				player = new MusicPlayer(MAIN_THEME);
 				player.play();
 			}
@@ -232,24 +254,42 @@ public class FlappyBird implements ActionListener, KeyListener {
 			} else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
 				paused = false;
 			}
-		} else {
+		} else if (inRanking) {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				reproducir(SELECT_SOUND);
-				if (inRanking) {
-					frame.remove(rankingPanel);
-					inRanking = false;
-					frame.add(menuPanel);
-					frame.repaint();
-					inMenu = true;
+				frame.remove(rankingPanel);
+				inRanking = false;
+				frame.add(menuPanel);
+				frame.repaint();
+				inMenu = true;
+			}
+		} else if (inInstructions) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				reproducir(SELECT_SOUND);
+				frame.remove(instructionsPanel);
+				inInstructions = false;
+				frame.add(menuPanel);
+				frame.repaint();
+				inMenu = true;
+			}
+		} else if (inOptions) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				reproducir(SELECT_SOUND);
+				frame.remove(optionsPanel);
+				inOptions = false;
+				frame.add(menuPanel);
+				frame.repaint();
+				inMenu = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				if (optionsPanel.moveUp()) {
+					reproducir(MOVE_SOUND);
 				}
-				if(inInstructions) {
-					frame.remove(instructionsPanel);
-					inInstructions = false;
-					frame.add(menuPanel);
-					frame.repaint();
-					inMenu = true;
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				if (optionsPanel.moveDown()) {
+					reproducir(MOVE_SOUND);
 				}
-				
 			}
 		}
 	}
