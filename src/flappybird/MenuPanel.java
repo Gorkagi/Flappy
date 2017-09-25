@@ -25,8 +25,7 @@ public class MenuPanel extends JPanel {
 			menuBack = ImageIO.read(new File("MenuImage.jpg"));
 			buttonBack = ImageIO.read(new File("BotonMenuRetro.png"));
 			buttonBackSelected = ImageIO.read(new File("BotonMenuRetroSelected.png"));
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -43,7 +42,6 @@ public class MenuPanel extends JPanel {
 		boolean pos2 = false;
 		boolean pos3 = false;
 		boolean pos4 = false;
-
 
 		paintMenu(g);
 
@@ -69,33 +67,32 @@ public class MenuPanel extends JPanel {
 		// Position 0
 		paintPlayButton(g, pos0);
 
-		//Position 1
+		// Position 1
 		paintRankingButton(g, pos1);
 
-		//Position 2
+		// Position 2
 		paintInstrucButton(g, pos2);
 
-		//Position 3
+		// Position 3
 		paintOptionsButton(g, pos3);
 
-		//Position 4
+		// Position 4
 		paintExitButton(g, pos4);
-
 
 	}
 
 	private void paintPlayButton(Graphics g, boolean selected) {
-		if(selected) {
+		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 100, 300, 50, null);
 			g.drawString("Jugar", 250, 135);
-		}else {
+		} else {
 			g.drawImage(buttonBack, 150, 100, 300, 50, null);
 			g.drawString("Jugar", 250, 135);
 		}
 	}
 
 	private void paintRankingButton(Graphics g, boolean selected) {
-		if(selected) {
+		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 170, 300, 50, null);
 			g.drawString("Ranking", 240, 205);
 		} else {
@@ -105,7 +102,7 @@ public class MenuPanel extends JPanel {
 	}
 
 	private void paintInstrucButton(Graphics g, boolean selected) {
-		if(selected) {
+		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 240, 300, 50, null);
 			g.drawString("Instrucciones", 175, 275);
 		} else {
@@ -115,20 +112,20 @@ public class MenuPanel extends JPanel {
 	}
 
 	private void paintOptionsButton(Graphics g, boolean selected) {
-		if(selected) {
+		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 310, 300, 50, null);
 			g.drawString("Opciones", 225, 345);
-		}else {
+		} else {
 			g.drawImage(buttonBack, 150, 310, 300, 50, null);
 			g.drawString("Opciones", 225, 345);
 		}
 	}
 
 	private void paintExitButton(Graphics g, boolean selected) {
-		if(selected) {
+		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 380, 300, 50, null);
 			g.drawString("Salir", 255, 415);
-		}else {
+		} else {
 			g.drawImage(buttonBack, 150, 380, 300, 50, null);
 			g.drawString("Salir", 255, 415);
 		}
@@ -137,9 +134,9 @@ public class MenuPanel extends JPanel {
 	private void paintMenu(Graphics g) {
 		g.setFont(titleFont);
 		g.drawImage(menuBack, 0, 0, 600, 600, null);
-		g.setColor(new Color(0,0,0,170));
+		g.setColor(new Color(0, 0, 0, 170));
 		g.drawString("Flappy", 200, 50);
-		g.setColor(new Color(255,255,255));
+		g.setColor(new Color(255, 255, 255));
 		g.setFont(menuFont);
 	}
 

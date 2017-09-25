@@ -9,7 +9,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Properties;
 
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -26,6 +30,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public final String MAIN_THEME = "audio/MenuTema.mp3";
 	public final String MOVE_SOUND = "audio/MenuMove.mp3";
 	public final String SELECT_SOUND = "audio/MenuSelect.mp3";
+	private final String OPTIONS_FILE = "options.txt";
 
 	private Bird bird;
 	private JFrame frame;
@@ -44,6 +49,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private boolean inRanking = false;
 	private boolean inInstructions = false;
 	private boolean inOptions = false;
+
+	Properties prop = new Properties();
+	InputStream is = null;
 
 	MusicPlayer player;
 
@@ -86,8 +94,17 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
-		player = new MusicPlayer(MAIN_THEME);
-		player.play();
+		try {
+			is = new FileInputStream(OPTIONS_FILE);
+			prop.load(is);
+		} catch (IOException e) {
+			System.out.println("Archivo no encontrado");
+		}
+
+		if (prop.getProperty("musica").equals("Si")) {
+			player = new MusicPlayer(MAIN_THEME);
+			player.play();
+		}
 	}
 
 	public void ranking() {
@@ -229,7 +246,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 					break;
 				case 4:
 					frame.dispose();
-					player.close();
+					if (player != null) {
+						player.close();
+					}
 					break;
 				default:
 					break;
@@ -274,12 +293,36 @@ public class FlappyBird implements ActionListener, KeyListener {
 			}
 		} else if (inOptions) {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-				reproducir(SELECT_SOUND);
-				frame.remove(optionsPanel);
-				inOptions = false;
-				frame.add(menuPanel);
-				frame.repaint();
-				inMenu = true;
+				if (optionsPanel.canExit()) {
+					try {
+						is = new FileInputStream(OPTIONS_FILE);
+						prop.load(is);
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
+
+					reproducir(SELECT_SOUND);
+					frame.remove(optionsPanel);
+					inOptions = false;
+					frame.add(menuPanel);
+					frame.repaint();
+					inMenu = true;
+
+					if (prop.getProperty("musica").equals("Si")) {
+						if (player == null) {
+							player = new MusicPlayer(MAIN_THEME);
+							player.play();
+						} else if (!player.isAlive()) {
+							player = new MusicPlayer(MAIN_THEME);
+							player.play();
+						}
+					}
+					if (prop.getProperty("musica").equals("No")) {
+						if (player != null) {
+							player.close();
+						}
+					}
+				}
 			}
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
 				if (optionsPanel.moveUp()) {
@@ -288,6 +331,16 @@ public class FlappyBird implements ActionListener, KeyListener {
 			}
 			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
 				if (optionsPanel.moveDown()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				if (optionsPanel.moveLeft()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				if (optionsPanel.moveRight()) {
 					reproducir(MOVE_SOUND);
 				}
 			}

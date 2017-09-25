@@ -1,0 +1,3 @@
+musica=Si
+personaje=Flappy
+idioma=Espanol

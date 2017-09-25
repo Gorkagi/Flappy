@@ -8,8 +8,8 @@ import javazoom.jl.player.Player;
 
 public class MusicPlayer extends Thread {
 
-	Player player;
-	String musicPath;
+	private Player player;
+	private String musicPath;
 
 	public MusicPlayer(String musicPath) {
 		this.musicPath = musicPath;
