@@ -20,8 +20,6 @@ import javax.swing.JPanel;
 
 public class OptionsPanel extends JPanel {
 
-	private final String OPTIONS_FILE = "options.txt";
-
 	private Font titleFont, menuFont, optionsFont;
 	private Image menuBack;
 	private Image buttonBack;
@@ -31,19 +29,21 @@ public class OptionsPanel extends JPanel {
 	private ArrayList<String> listaMusica;
 	private ArrayList<String> listaPersonajes;
 	private ArrayList<String> listaIdiomas;
+	private ArrayList<String> listaMusicaEsp;
+	private ArrayList<String> listaIdiomasEsp;
 
 	private int posListaMusica;
 	private int posListaPersonajes;
 	private int posListaIdiomas;
+	
+	private Properties idioma;
+	private Properties opciones;
 
 	public OptionsPanel() {
 		titleFont = new Font("8BIT WONDER", Font.BOLD, 34);
 		menuFont = new Font("8BIT WONDER", Font.BOLD, 20);
 		optionsFont = new Font("8BIT WONDER", Font.BOLD, 24);
-
-		listaMusica = new ArrayList<String>();
-		listaPersonajes = new ArrayList<String>();
-		listaIdiomas = new ArrayList<String>();
+		idioma = FlappyBird.idioma;
 
 		inicializarOpciones();
 
@@ -57,31 +57,41 @@ public class OptionsPanel extends JPanel {
 	}
 
 	private void inicializarOpciones() {
-		listaMusica.add("Si");
-		listaMusica.add("No");
+		listaMusica = new ArrayList<String>();
+		listaPersonajes = new ArrayList<String>();
+		listaIdiomas = new ArrayList<String>();
+		listaMusicaEsp = new ArrayList<String>();
+		listaIdiomasEsp = new ArrayList<String>();
+		
+		listaMusicaEsp.add("Si");
+		listaMusicaEsp.add("No");
 
+		listaMusica.add(idioma.getProperty("si"));
+		listaMusica.add(idioma.getProperty("no"));
+		
 		listaPersonajes.add("Flappy");
 		listaPersonajes.add("Banana");
 		listaPersonajes.add("Mario");
 		listaPersonajes.add("Pacman");
 
-		listaIdiomas.add("Espanol");
-		listaIdiomas.add("Ingles");
+		listaIdiomasEsp.add("Espanol");
+		listaIdiomasEsp.add("Ingles");
+		
+		listaIdiomas.add(idioma.getProperty("espanol"));
+		listaIdiomas.add(idioma.getProperty("ingles"));
 
 		loadOptions();
 	}
 
 	private void loadOptions() {
-		Properties prop = new Properties();
-		InputStream is = null;
+		opciones = new Properties();
 
 		try {
-			is = new FileInputStream(OPTIONS_FILE);
-			prop.load(is);
+			opciones.load(new FileInputStream(FlappyBird.OPTIONS_FILE));
 
-			posListaMusica = listaMusica.indexOf(prop.getProperty("musica"));
-			posListaPersonajes = listaPersonajes.indexOf(prop.getProperty("personaje"));
-			posListaIdiomas = listaIdiomas.indexOf(prop.getProperty("idioma"));
+			posListaMusica = listaMusicaEsp.indexOf(opciones.getProperty("musica"));
+			posListaPersonajes = listaPersonajes.indexOf(opciones.getProperty("personaje"));
+			posListaIdiomas = listaIdiomasEsp.indexOf(opciones.getProperty("idioma"));
 		} catch (IOException e) {
 			posListaMusica = 0;
 			posListaPersonajes = 0;
@@ -96,14 +106,6 @@ public class OptionsPanel extends JPanel {
 			if (posListaIdiomas < 0) {
 				posListaIdiomas = 0;
 			}
-
-			if (is != null) {
-				try {
-					is.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 	}
@@ -112,10 +114,10 @@ public class OptionsPanel extends JPanel {
 		PrintWriter out = null;
 
 		try {
-			out = new PrintWriter(new BufferedWriter(new FileWriter(OPTIONS_FILE)));
-			out.println("musica=" + listaMusica.get(posListaMusica));
+			out = new PrintWriter(new BufferedWriter(new FileWriter(FlappyBird.OPTIONS_FILE)));
+			out.println("musica=" + listaMusicaEsp.get(posListaMusica));
 			out.println("personaje=" + listaPersonajes.get(posListaPersonajes));
-			out.println("idioma=" + listaIdiomas.get(posListaIdiomas));
+			out.println("idioma=" + listaIdiomasEsp.get(posListaIdiomas));
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
@@ -276,7 +278,7 @@ public class OptionsPanel extends JPanel {
 		} else {
 			g.setColor(new Color(0, 0, 0, 170));
 		}
-		g.drawString("Musica", 60, 120);
+		g.drawString(idioma.getProperty("musica"), 60, 120);
 		g.drawString(listaMusica.get(posListaMusica), 360, 120);
 	}
 
@@ -286,7 +288,7 @@ public class OptionsPanel extends JPanel {
 		} else {
 			g.setColor(new Color(0, 0, 0, 170));
 		}
-		g.drawString("Personaje", 60, 200);
+		g.drawString(idioma.getProperty("personaje"), 60, 200);
 		g.drawString(listaPersonajes.get(posListaPersonajes), 360, 200);
 	}
 
@@ -296,7 +298,7 @@ public class OptionsPanel extends JPanel {
 		} else {
 			g.setColor(new Color(0, 0, 0, 170));
 		}
-		g.drawString("Idioma", 60, 280);
+		g.drawString(idioma.getProperty("idioma"), 60, 280);
 		g.drawString(listaIdiomas.get(posListaIdiomas), 360, 280);
 	}
 
@@ -310,6 +312,6 @@ public class OptionsPanel extends JPanel {
 			boton = buttonBack;
 		}
 		g.drawImage(boton, 150, 475, 300, 50, null);
-		g.drawString("Guardar", 230, 510);
+		g.drawString(idioma.getProperty("guardar"), 230, 510);
 	}
 }

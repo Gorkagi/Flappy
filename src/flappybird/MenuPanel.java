@@ -5,21 +5,28 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
 public class MenuPanel extends JPanel {
-
+	
 	private Font titleFont, menuFont;
 	private Image buttonBack;
 	private Image menuBack;
 	private Image buttonBackSelected;
 	private int menuPos = 0;
+	
+	private Properties idioma;
 
 	public MenuPanel() {
 		titleFont = new Font("8BIT WONDER", Font.BOLD, 34);
 		menuFont = new Font("8BIT WONDER", Font.BOLD, 20);
+		idioma = FlappyBird.idioma;
 
 		try {
 			menuBack = ImageIO.read(new File("MenuImage.jpg"));
@@ -36,7 +43,7 @@ public class MenuPanel extends JPanel {
 	}
 
 	@Override
-	public void paintComponent(Graphics g) {
+	public void paintComponent(Graphics g) {		
 		boolean pos0 = false;
 		boolean pos1 = false;
 		boolean pos2 = false;
@@ -84,51 +91,46 @@ public class MenuPanel extends JPanel {
 	private void paintPlayButton(Graphics g, boolean selected) {
 		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 100, 300, 50, null);
-			g.drawString("Jugar", 250, 135);
 		} else {
 			g.drawImage(buttonBack, 150, 100, 300, 50, null);
-			g.drawString("Jugar", 250, 135);
 		}
+		g.drawString(idioma.getProperty("jugar"), 250, 135);
 	}
 
 	private void paintRankingButton(Graphics g, boolean selected) {
 		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 170, 300, 50, null);
-			g.drawString("Ranking", 240, 205);
 		} else {
 			g.drawImage(buttonBack, 150, 170, 300, 50, null);
-			g.drawString("Ranking", 240, 205);
 		}
+		g.drawString(idioma.getProperty("ranking"), 240, 205);
 	}
 
 	private void paintInstrucButton(Graphics g, boolean selected) {
 		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 240, 300, 50, null);
-			g.drawString("Instrucciones", 175, 275);
 		} else {
 			g.drawImage(buttonBack, 150, 240, 300, 50, null);
-			g.drawString("Instrucciones", 175, 275);
 		}
+		g.drawString(idioma.getProperty("instrucciones"), 175, 275);
 	}
 
 	private void paintOptionsButton(Graphics g, boolean selected) {
 		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 310, 300, 50, null);
-			g.drawString("Opciones", 225, 345);
 		} else {
 			g.drawImage(buttonBack, 150, 310, 300, 50, null);
-			g.drawString("Opciones", 225, 345);
 		}
+		g.drawString(idioma.getProperty("opciones"), 225, 345);
 	}
 
 	private void paintExitButton(Graphics g, boolean selected) {
 		if (selected) {
 			g.drawImage(buttonBackSelected, 150, 380, 300, 50, null);
-			g.drawString("Salir", 255, 415);
 		} else {
 			g.drawImage(buttonBack, 150, 380, 300, 50, null);
-			g.drawString("Salir", 255, 415);
 		}
+		g.drawString(idioma.getProperty("salir"), 255, 415);
 	}
 
 	private void paintMenu(Graphics g) {
