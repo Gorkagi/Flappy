@@ -26,7 +26,7 @@ import javax.swing.Timer;
  */
 public class FlappyBird implements ActionListener, KeyListener {
 
-	public static final int FPS = 60, WIDTH = 600, HEIGHT = 600;
+	public static final int WIDTH = 600, HEIGHT = 600;
 	public final String MAIN_THEME = "audio/MenuTema.mp3";
 	public final String MOVE_SOUND = "audio/MenuMove.mp3";
 	public final String SELECT_SOUND = "audio/MenuSelect.mp3";
@@ -44,6 +44,8 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private ArrayList<Rectangle> rects;
 	private int time, scroll;
 	private Timer t;
+	
+	private static int FPS = 75;
 
 	private boolean paused;
 	private boolean inMenu;
@@ -75,6 +77,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 		paused = true;
 
 		t = new Timer(1000 / FPS, this);
+		t.setDelay(30);
 		t.start();
 		inGame = true;
 		inMenu = false;
@@ -369,6 +372,10 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 	public void keyTyped(KeyEvent e) {
 
+	}
+	
+	public void setSpeedFPS(int delay) {
+		t.setDelay(delay);
 	}
 
 	public boolean paused() {

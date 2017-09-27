@@ -29,6 +29,10 @@ public class Bird {
 			e.printStackTrace();
 		}
 	}
+	
+	public void setVx(int vx) {
+		this.vx = vx;
+	}
 
 	public void physics() {
 		x += vx;
