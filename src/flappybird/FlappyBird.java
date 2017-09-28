@@ -215,9 +215,31 @@ public class FlappyBird implements ActionListener, KeyListener {
 					toRemove.add(r);
 				}
 				if (r.contains(bird.x, bird.y)) {
+					
+					if (GamePanel.player.isAlive()) {
+						
+						GamePanel.player.close();
+					} 
+					
+					if (GamePanel.player1.isAlive()) {
+						
+						GamePanel.player1.close();
+					} 
+					
+					if (GamePanel.player2.isAlive()) {
+						
+						GamePanel.player2.close();
+					} 
+					
+					GamePanel.killPlayer = true;
+					GamePanel.killPlayer1 = true;
+					GamePanel.killPlayer2 = true;
 					reproducir(COLISION_SOUND);
+					
+					
 					JOptionPane.showMessageDialog(frame, "You lose!\n" + "Your score was: " + time + ".");
 					game = false;
+					
 				}
 			}
 			rects.removeAll(toRemove);

@@ -14,6 +14,8 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.SynchronousQueue;
+
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
@@ -30,14 +32,21 @@ public class GamePanel extends JPanel {
 	public static final Color bg = new Color(0, 158, 158);
 	public static final int PIPE_W = 50, PIPE_H = 20;
 	private Image pipeHead, pipeLength, background1, background2, background3;
+	static MusicPlayer player, player1, player2;
+	static boolean killPlayer1, killPlayer2, killPlayer;
 
+	public final static String GAME = "audio/Game.mp3";
+	public final static String GAME1 = "audio/GameX1.mp3";
+	public final static String GAME2 = "audio/GameX2.mp3";
+	
 	public GamePanel(FlappyBird fb, Bird bird, ArrayList<Rectangle> rects) {
 		this.fb = fb;
 		this.bird = bird;
 		this.rects = rects;
 		scoreFont = new Font("Comic Sans MS", Font.BOLD, 18);
 		pauseFont = new Font("Arial", Font.BOLD, 48);
-
+		this.initPlayers();
+		
 		try {
 			//pipeHead = ImageIO.read(new File("tree.png"));
 			pipeLength = ImageIO.read(new File("pipe_part.png"));
@@ -48,21 +57,58 @@ public class GamePanel extends JPanel {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void initPlayers() {
+		player = new MusicPlayer(GAME);
+		player1 = new MusicPlayer(GAME1);
+		player2 = new MusicPlayer(GAME2);
+		killPlayer = false;
+		killPlayer1 = false;
+		killPlayer2 = false;
+	}
 
 	@Override
 	public void paintComponent(Graphics g) {
+		
 		if(fb.getScore() < 150) {
 			g.drawImage(background1, 0, 0, 600, 600, null);
 			fb.setSpeedFPS(30);
 			fb.frequency = 3;
+			
+			if (!player.isAlive() && killPlayer == false) {
+				player.play();
+			}
+			
+			
 		}else if(fb.getScore() > 150 && fb.getScore() < 250) {
 			g.drawImage(background2, 0, 0, 600, 600, null);
 			fb.setSpeedFPS(15);
 			fb.frequency = 2;
+			
+			
+			if (player.isAlive() ) {
+				player.close();
+			}
+			
+			if (!player1.isAlive() && killPlayer1 == false) {
+				player1.play();
+			}
+			
+
 		}else {
 			g.drawImage(background3, 0, 0, 600, 600, null);
 			fb.setSpeedFPS(10);
 			fb.frequency = 1;
+
+			
+			if (player1.isAlive()) {
+				player1.close();
+			}
+			
+			if (!player2.isAlive() && killPlayer2 == false) {
+				player2.play();
+			}
+			
 		}
 		bird.update(g);
 		g.setColor(Color.RED);
