@@ -53,12 +53,13 @@ public class GamePanel extends JPanel {
 	public void paintComponent(Graphics g) {
 		if(fb.getScore() < 150) {
 			g.drawImage(background1, 0, 0, 600, 600, null);
+			fb.setSpeedFPS(30);
 		}else if(fb.getScore() > 150 && fb.getScore() < 250) {
 			g.drawImage(background2, 0, 0, 600, 600, null);
 			fb.setSpeedFPS(15);
 		}else {
 			g.drawImage(background3, 0, 0, 600, 600, null);
-			fb.setSpeedFPS(1);
+			fb.setSpeedFPS(10);
 		}
 		bird.update(g);
 		g.setColor(Color.RED);
