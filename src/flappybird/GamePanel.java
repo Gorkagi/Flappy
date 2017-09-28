@@ -28,7 +28,7 @@ public class GamePanel extends JPanel {
 	private FlappyBird fb;
 	private Font scoreFont, pauseFont;
 	public static final Color bg = new Color(0, 158, 158);
-	public static final int PIPE_W = 50, PIPE_H = 30;
+	public static final int PIPE_W = 50, PIPE_H = 20;
 	private Image pipeHead, pipeLength, background1, background2, background3;
 
 	public GamePanel(FlappyBird fb, Bird bird, ArrayList<Rectangle> rects) {
@@ -39,7 +39,7 @@ public class GamePanel extends JPanel {
 		pauseFont = new Font("Arial", Font.BOLD, 48);
 
 		try {
-			pipeHead = ImageIO.read(new File("78px-Pipe.png"));
+			//pipeHead = ImageIO.read(new File("tree.png"));
 			pipeLength = ImageIO.read(new File("pipe_part.png"));
 			background1 = ImageIO.read(new File("GameBack.png"));
 			background2 = ImageIO.read(new File("GameBack2.png"));
@@ -73,7 +73,7 @@ public class GamePanel extends JPanel {
 				g2d.translate(0, r.height);
 				g2d.rotate(Math.PI);
 			}
-			g2d.drawImage(pipeHead, -PIPE_W / 2, -PIPE_H / 2, GamePanel.PIPE_W, GamePanel.PIPE_H, null);
+			//g2d.drawImage(pipeHead, -PIPE_W / 2, -PIPE_H / 2, GamePanel.PIPE_W, GamePanel.PIPE_H, null);
 			g2d.drawImage(pipeLength, -PIPE_W / 2, PIPE_H / 2, GamePanel.PIPE_W, r.height, null);
 			g2d.setTransform(old);
 		}
