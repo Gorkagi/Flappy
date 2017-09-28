@@ -58,12 +58,16 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private boolean inInstructions = false;
 	private boolean inOptions = false;
 
-	public Properties opciones = new Properties();
+	public static Properties opciones = new Properties();
 	public static Properties idioma = new Properties();
 
 	MusicPlayer player;
 
 	private int menuCount = 0;
+	
+	public static Properties getOpciones() {
+		return opciones;
+	}
 
 	public void go() {
 		bird = new Bird();

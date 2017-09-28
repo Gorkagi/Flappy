@@ -19,12 +19,33 @@ public class Bird {
 	public float x, y, vx, vy;
 	public static final int RAD = 25;
 	private Image img;
+	
+	private final String BIRD_IMG = "bird.png";
+	private final String MARIO_IMG = "mario.png";
+	private final String PACMAN_IMG = "pacman.png";
+	private final String BANANE_IMG = "banane.png";
 
 	public Bird() {
 		x = FlappyBird.WIDTH / 2;
 		y = FlappyBird.HEIGHT / 2;
 		try {
-			img = ImageIO.read(new File("sticker,375x360.u2.png"));
+			switch (FlappyBird.getOpciones().getProperty("personaje")) {
+			case "Flappy":
+				img = ImageIO.read(new File(BIRD_IMG));
+				break;
+			case "Banana":
+				img = ImageIO.read(new File(BANANE_IMG));
+				break;
+			case "Mario":
+				img = ImageIO.read(new File(MARIO_IMG));
+				break;
+			case "Pacman":
+				img = ImageIO.read(new File(PACMAN_IMG));
+				break;
+			default:
+				img = ImageIO.read(new File(BIRD_IMG));
+				break;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

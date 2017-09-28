@@ -1,3 +1,3 @@
 musica=No
-personaje=Flappy
-idioma=Ingles
+personaje=Pacman
+idioma=Espanol
