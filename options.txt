@@ -1,3 +1,3 @@
 musica=No
 personaje=Flappy
-idioma=Espanol
+idioma=Ingles

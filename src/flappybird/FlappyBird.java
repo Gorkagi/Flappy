@@ -30,6 +30,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public final String MAIN_THEME = "audio/MenuTema.mp3";
 	public final String MOVE_SOUND = "audio/MenuMove.mp3";
 	public final String SELECT_SOUND = "audio/MenuSelect.mp3";
+	public final String COLISION_SOUND = "audio/Colision.mp3";
 	public static final String OPTIONS_FILE = "options.txt";
 	public static final String ES_PROPERTIES = "es.properties";
 	public static final String EN_PROPERTIES = "en.properties";
@@ -207,6 +208,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 					toRemove.add(r);
 				}
 				if (r.contains(bird.x, bird.y)) {
+					reproducir(COLISION_SOUND);
 					JOptionPane.showMessageDialog(frame, "You lose!\n" + "Your score was: " + time + ".");
 					game = false;
 				}
