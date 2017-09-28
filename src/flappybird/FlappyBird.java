@@ -48,6 +48,8 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private Timer t;
 	
 	private static int FPS = 75;
+	
+	static int frequency = 3;
 
 	private boolean paused;
 	private boolean inMenu;
@@ -204,7 +206,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 			ArrayList<Rectangle> toRemove = new ArrayList<Rectangle>();
 			boolean game = true;
 			for (Rectangle r : rects) {
-				r.x -= 3;
+				r.x -= this.frequency;
 				if (r.x + r.width <= 0) {
 					toRemove.add(r);
 				}
