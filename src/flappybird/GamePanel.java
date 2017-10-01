@@ -72,18 +72,18 @@ public class GamePanel extends JPanel {
 		
 		if(fb.getScore() < 150) {
 			g.drawImage(background1, 0, 0, 600, 600, null);
-			fb.setSpeedFPS(30);
-			fb.frequency = 3;
+			//fb.setSpeedFPS(30);
+			fb.frequency = 2;
 			
 			if (!player.isAlive() && killPlayer == false) {
 				player.play();
 			}
 			
 			
-		}else if(fb.getScore() > 150 && fb.getScore() < 250) {
+		}else if(fb.getScore() >= 150 && fb.getScore() < 350) {
 			g.drawImage(background2, 0, 0, 600, 600, null);
-			fb.setSpeedFPS(15);
-			fb.frequency = 2;
+			//fb.setSpeedFPS(15);
+			fb.frequency = 4;
 			
 			
 			if (player.isAlive() ) {
@@ -97,8 +97,8 @@ public class GamePanel extends JPanel {
 
 		}else {
 			g.drawImage(background3, 0, 0, 600, 600, null);
-			fb.setSpeedFPS(10);
-			fb.frequency = 1;
+			//fb.setSpeedFPS(1);
+			fb.frequency = 6;
 
 			
 			if (player1.isAlive()) {

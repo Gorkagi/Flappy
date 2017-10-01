@@ -43,6 +43,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private RankingPanel rankingPanel;
 	private InstructionsPanel instructionsPanel;
 	private OptionsPanel optionsPanel;
+	private GameOverPanel gameOverPanel;
 	private ArrayList<Rectangle> rects;
 	private int time, scroll;
 	private Timer t;
@@ -57,6 +58,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 	private boolean inRanking = false;
 	private boolean inInstructions = false;
 	private boolean inOptions = false;
+	private boolean inGameOver = false;
 
 	public static Properties opciones = new Properties();
 	public static Properties idioma = new Properties();
@@ -82,12 +84,12 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 
-		paused = true;
-
 		t = new Timer(1000 / FPS, this);
-		t.setDelay(30);
+		t.setDelay(10);
 		t.start();
+		
 		inGame = true;
+		paused = true;
 		inMenu = false;
 	}
 
@@ -169,6 +171,27 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
+	
+	public void gameOver() {
+		if (frame == null) {
+			frame = new JFrame("Flappy");
+			frame.setResizable(false);
+		}
+		
+		
+		gameOverPanel = new GameOverPanel();
+		frame.remove(gamePanel);
+		frame.add(gameOverPanel);
+		frame.repaint();
+		
+		inGame = false;
+		paused = true;
+		inGameOver = true;
+		
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
 
 	public static void main(String[] args) {
 		new FlappyBird().menu();
@@ -199,10 +222,10 @@ public class FlappyBird implements ActionListener, KeyListener {
 		gamePanel.repaint();
 		if (!paused) {
 			bird.physics();
-			if (scroll % 90 == 0) {
+			if (scroll % (90/(frequency/2)) == 0) {
 				Rectangle r = new Rectangle(WIDTH, 0, GamePanel.PIPE_W,
-						(int) ((Math.random() * HEIGHT) / 5f + (0.2f) * HEIGHT));
-				int h2 = (int) ((Math.random() * HEIGHT) / 5f + (0.2f) * HEIGHT);
+						(int) ((Math.random() * HEIGHT) / 3f + HEIGHT / 4.8f));
+				int h2 = (int) (HEIGHT - 150f - r.getHeight());
 				Rectangle r2 = new Rectangle(WIDTH, HEIGHT - h2, GamePanel.PIPE_W, h2);
 				rects.add(r);
 				rects.add(r2);
@@ -210,7 +233,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 			ArrayList<Rectangle> toRemove = new ArrayList<Rectangle>();
 			boolean game = true;
 			for (Rectangle r : rects) {
-				r.x -= this.frequency;
+				r.x -= frequency;
 				if (r.x + r.width <= 0) {
 					toRemove.add(r);
 				}
@@ -235,11 +258,10 @@ public class FlappyBird implements ActionListener, KeyListener {
 					GamePanel.killPlayer1 = true;
 					GamePanel.killPlayer2 = true;
 					reproducir(COLISION_SOUND);
-					
-					
-					JOptionPane.showMessageDialog(frame, "You lose!\n" + "Your score was: " + time + ".");
+										
+					gameOver();
+			
 					game = false;
-					
 				}
 			}
 			rects.removeAll(toRemove);
@@ -267,7 +289,6 @@ public class FlappyBird implements ActionListener, KeyListener {
 	}
 
 	public void keyPressed(KeyEvent e) {
-
 		if (inMenu) {
 			if (e.getKeyCode() == KeyEvent.VK_DOWN && menuCount < 4) {
 				menuCount++;
@@ -394,6 +415,47 @@ public class FlappyBird implements ActionListener, KeyListener {
 				if (optionsPanel.moveRight()) {
 					reproducir(MOVE_SOUND);
 				}
+			}
+		} else if (inGameOver) {
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				if (gameOverPanel.moveUp()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				if (gameOverPanel.moveDown()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				reproducir(SELECT_SOUND);
+				switch (gameOverPanel.getMenuPos()) {
+				case 0:
+					frame.remove(gameOverPanel);
+					inGameOver = false;
+					t.stop();
+					go();
+					break;
+				case 1:
+					frame.remove(gameOverPanel);
+					inGameOver = false;
+					frame.add(menuPanel);
+					frame.repaint();
+					inMenu = true;
+					
+					if (opciones.getProperty("musica").equals("Si")) {
+						player = new MusicPlayer(MAIN_THEME);
+						player.play();
+					}
+					break;
+				case 2:
+					frame.dispose();
+					t.stop();
+					break;
+				default:
+					break;
+				}
+				inGameOver = false;
 			}
 		}
 	}
