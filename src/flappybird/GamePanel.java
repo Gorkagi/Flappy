@@ -14,7 +14,6 @@ import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.concurrent.SynchronousQueue;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
@@ -27,28 +26,20 @@ public class GamePanel extends JPanel {
 
 	private Bird bird;
 	private ArrayList<Rectangle> rects;
-	private FlappyBird fb;
+	private Game game;
 	private Font scoreFont, pauseFont;
-	public static final Color bg = new Color(0, 158, 158);
 	public static final int PIPE_W = 50, PIPE_H = 20;
 	private Image pipeHead, pipeLength, background1, background2, background3;
-	static MusicPlayer player, player1, player2;
-	static boolean killPlayer1, killPlayer2, killPlayer;
 
-	public final static String GAME = "audio/Game.mp3";
-	public final static String GAME1 = "audio/GameX1.mp3";
-	public final static String GAME2 = "audio/GameX2.mp3";
-	
-	public GamePanel(FlappyBird fb, Bird bird, ArrayList<Rectangle> rects) {
-		this.fb = fb;
+	public GamePanel(Game game, Bird bird, ArrayList<Rectangle> rects) {
+		this.game = game;
 		this.bird = bird;
 		this.rects = rects;
-		scoreFont = new Font("Comic Sans MS", Font.BOLD, 18);
-		pauseFont = new Font("Arial", Font.BOLD, 48);
-		this.initPlayers();
-		
+		scoreFont = new Font("8BIT WONDER", Font.PLAIN, 18);
+		pauseFont = new Font("8BIT WONDER", Font.BOLD, 34);
+
 		try {
-			//pipeHead = ImageIO.read(new File("tree.png"));
+			// pipeHead = ImageIO.read(new File("tree.png"));
 			pipeLength = ImageIO.read(new File("pipe_part.png"));
 			background1 = ImageIO.read(new File("GameBack.png"));
 			background2 = ImageIO.read(new File("GameBack2.png"));
@@ -57,58 +48,36 @@ public class GamePanel extends JPanel {
 			e.printStackTrace();
 		}
 	}
-	
-	public static void initPlayers() {
-		player = new MusicPlayer(GAME);
-		player1 = new MusicPlayer(GAME1);
-		player2 = new MusicPlayer(GAME2);
-		killPlayer = false;
-		killPlayer1 = false;
-		killPlayer2 = false;
-	}
 
 	@Override
 	public void paintComponent(Graphics g) {
-		
-		if(fb.getScore() < 150) {
+
+		if (game.getScore() < Game.LVL2 - 10) {
 			g.drawImage(background1, 0, 0, 600, 600, null);
-			//fb.setSpeedFPS(30);
-			fb.frequency = 2;
-			
-			if (!player.isAlive() && killPlayer == false) {
-				player.play();
+			game.setFrequency(2);
+
+		} else if (game.getScore() >= Game.LVL2 - 10 && game.getScore() < Game.LVL2 + 10) {
+			if (game.getScore() % 5 == 0) {
+				g.drawImage(background2, 0, 0, 600, 600, null);
+			} else {
+				g.drawImage(background1, 0, 0, 600, 600, null);
 			}
-			
-			
-		}else if(fb.getScore() >= 150 && fb.getScore() < 350) {
+
+		} else if (game.getScore() >= Game.LVL2 + 10 && game.getScore() < Game.LVL3 - 10) {
 			g.drawImage(background2, 0, 0, 600, 600, null);
-			//fb.setSpeedFPS(15);
-			fb.frequency = 4;
-			
-			
-			if (player.isAlive() ) {
-				player.close();
-			}
-			
-			if (!player1.isAlive() && killPlayer1 == false) {
-				player1.play();
-			}
-			
+			game.setFrequency(4);
 
-		}else {
+		}  else if (game.getScore() >= Game.LVL3 - 10 && game.getScore() < Game.LVL3 + 10) {
+			if (game.getScore() % 5 == 0) {
+				g.drawImage(background3, 0, 0, 600, 600, null);
+			} else {
+				g.drawImage(background2, 0, 0, 600, 600, null);
+			}
+
+		} else {
 			g.drawImage(background3, 0, 0, 600, 600, null);
-			//fb.setSpeedFPS(1);
-			fb.frequency = 6;
+			game.setFrequency(6);
 
-			
-			if (player1.isAlive()) {
-				player1.close();
-			}
-			
-			if (!player2.isAlive() && killPlayer2 == false) {
-				player2.play();
-			}
-			
 		}
 		bird.update(g);
 		g.setColor(Color.RED);
@@ -122,19 +91,20 @@ public class GamePanel extends JPanel {
 				g2d.translate(0, r.height);
 				g2d.rotate(Math.PI);
 			}
-			//g2d.drawImage(pipeHead, -PIPE_W / 2, -PIPE_H / 2, GamePanel.PIPE_W, GamePanel.PIPE_H, null);
+			// g2d.drawImage(pipeHead, -PIPE_W / 2, -PIPE_H / 2, GamePanel.PIPE_W,
+			// GamePanel.PIPE_H, null);
 			g2d.drawImage(pipeLength, -PIPE_W / 2, PIPE_H / 2, GamePanel.PIPE_W, r.height, null);
 			g2d.setTransform(old);
 		}
 		g.setFont(scoreFont);
-		g.setColor(Color.BLACK);
-		g.drawString("Score: " + fb.getScore(), 10, 20);
+		g.setColor(Color.WHITE);
+		g.drawString("Score " + game.getScore(), 10, 20);
 
-		if (fb.paused()) {
+		if (game.isPaused()) {
 			g.setFont(pauseFont);
 			g.setColor(new Color(0, 0, 0, 170));
-			g.drawString("PAUSED", FlappyBird.WIDTH / 2 - 100, FlappyBird.HEIGHT / 2 - 100);
-			g.drawString("PRESS SPACE TO BEGIN", FlappyBird.WIDTH / 2 - 300, FlappyBird.HEIGHT / 2 + 50);
+			g.drawString("PAUSED", FlappyBird.WIDTH / 2 - 100, FlappyBird.HEIGHT / 2 - 75);
+			g.drawString("PRESS UP TO BEGIN", FlappyBird.WIDTH / 2 - 275, FlappyBird.HEIGHT / 2 + 100);
 		}
 	}
 }

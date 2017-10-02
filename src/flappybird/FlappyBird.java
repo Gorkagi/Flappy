@@ -24,35 +24,26 @@ import javax.swing.Timer;
  *
  * @author User
  */
-public class FlappyBird implements ActionListener, KeyListener {
+public class FlappyBird implements KeyListener {
 
 	public static final int WIDTH = 600, HEIGHT = 600;
 	public final String MAIN_THEME = "audio/MenuTema.mp3";
 	public final String MOVE_SOUND = "audio/MenuMove.mp3";
 	public final String SELECT_SOUND = "audio/MenuSelect.mp3";
-	public final String COLISION_SOUND = "audio/Colision.mp3";
+	public final static String COLISION_SOUND = "audio/Colision.mp3";
 	public final String WINGS_SOUND = "audio/Wings.mp3";
 	public static final String OPTIONS_FILE = "options.txt";
 	public static final String ES_PROPERTIES = "es.properties";
 	public static final String EN_PROPERTIES = "en.properties";
 
-	private Bird bird;
 	private JFrame frame;
-	private JPanel gamePanel;
 	private MenuPanel menuPanel;
 	private RankingPanel rankingPanel;
 	private InstructionsPanel instructionsPanel;
 	private OptionsPanel optionsPanel;
 	private GameOverPanel gameOverPanel;
-	private ArrayList<Rectangle> rects;
-	private int time, scroll;
-	private Timer t;
-	
-	private static int FPS = 75;
-	
-	static int frequency = 3;
+	private Game game;
 
-	private boolean paused;
 	private boolean inMenu;
 	private boolean inGame = false;
 	private boolean inRanking = false;
@@ -66,31 +57,19 @@ public class FlappyBird implements ActionListener, KeyListener {
 	MusicPlayer player;
 
 	private int menuCount = 0;
-	
+
 	public static Properties getOpciones() {
 		return opciones;
 	}
 
 	public void go() {
-		bird = new Bird();
-		rects = new ArrayList<Rectangle>();
-		gamePanel = new GamePanel(this, bird, rects);
-
 		frame.remove(menuPanel);
-		frame.add(gamePanel);
-		frame.repaint();
 
-		frame.setSize(WIDTH, HEIGHT);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setVisible(true);
-
-		t = new Timer(1000 / FPS, this);
-		t.setDelay(10);
-		t.start();
-		
 		inGame = true;
-		paused = true;
 		inMenu = false;
+
+		game = new Game(this);
+		game.start();
 	}
 
 	public void menu() {
@@ -100,9 +79,9 @@ public class FlappyBird implements ActionListener, KeyListener {
 			frame.setResizable(false);
 			frame.addKeyListener(this);
 		}
-		
+
 		loadLanguage();
-		
+
 		menuPanel = new MenuPanel();
 		frame.add(menuPanel);
 
@@ -171,23 +150,22 @@ public class FlappyBird implements ActionListener, KeyListener {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 	}
-	
+
 	public void gameOver() {
 		if (frame == null) {
 			frame = new JFrame("Flappy");
 			frame.setResizable(false);
 		}
-		
-		
+
 		gameOverPanel = new GameOverPanel();
-		frame.remove(gamePanel);
+		frame.remove(game.getGamePanel());
 		frame.add(gameOverPanel);
 		frame.repaint();
-		
+
 		inGame = false;
-		paused = true;
+		game.setPaused(true);
 		inGameOver = true;
-		
+
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setVisible(true);
@@ -196,96 +174,24 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public static void main(String[] args) {
 		new FlappyBird().menu();
 	}
-	
+
 	public void loadLanguage() {
 		try {
 			opciones.load(new FileInputStream(OPTIONS_FILE));
-			
+
 			String language = opciones.getProperty("idioma");
-			
+
 			if (language.equals("Espanol")) {
 				idioma.load(new FileInputStream(ES_PROPERTIES));
 			}
-			
+
 			if (language.equals("Ingles")) {
 				idioma.load(new FileInputStream(EN_PROPERTIES));
 			}
-			
+
 		} catch (IOException e) {
 			System.out.println("Idioma no cargado");
 		}
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-
-		gamePanel.repaint();
-		if (!paused) {
-			bird.physics();
-			if (scroll % (90/(frequency/2)) == 0) {
-				Rectangle r = new Rectangle(WIDTH, 0, GamePanel.PIPE_W,
-						(int) ((Math.random() * HEIGHT) / 3f + HEIGHT / 4.8f));
-				int h2 = (int) (HEIGHT - 150f - r.getHeight());
-				Rectangle r2 = new Rectangle(WIDTH, HEIGHT - h2, GamePanel.PIPE_W, h2);
-				rects.add(r);
-				rects.add(r2);
-			}
-			ArrayList<Rectangle> toRemove = new ArrayList<Rectangle>();
-			boolean game = true;
-			for (Rectangle r : rects) {
-				r.x -= frequency;
-				if (r.x + r.width <= 0) {
-					toRemove.add(r);
-				}
-				if (r.contains(bird.x, bird.y)) {
-					
-					if (GamePanel.player.isAlive()) {
-						
-						GamePanel.player.close();
-					} 
-					
-					if (GamePanel.player1.isAlive()) {
-						
-						GamePanel.player1.close();
-					} 
-					
-					if (GamePanel.player2.isAlive()) {
-						
-						GamePanel.player2.close();
-					} 
-					
-					GamePanel.killPlayer = true;
-					GamePanel.killPlayer1 = true;
-					GamePanel.killPlayer2 = true;
-					reproducir(COLISION_SOUND);
-										
-					gameOver();
-			
-					game = false;
-				}
-			}
-			rects.removeAll(toRemove);
-			time++;
-			scroll++;
-
-			if (bird.y > HEIGHT || bird.y + bird.RAD < 0) {
-				game = false;
-			}
-
-			if (!game) {
-				rects.clear();
-				bird.reset();
-				time = 0;
-				scroll = 0;
-				paused = true;
-			}
-		} else if (inMenu) {
-			t.stop();
-		}
-	}
-
-	public int getScore() {
-		return time;
 	}
 
 	public void keyPressed(KeyEvent e) {
@@ -332,23 +238,26 @@ public class FlappyBird implements ActionListener, KeyListener {
 
 		} else if (inGame) {
 			if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-				paused = true;
+				game.setPaused(true);
+				game.killPlayer();
 				inMenu = true;
 				inGame = false;
-				frame.remove(gamePanel);
+				frame.remove(game.getGamePanel());
 				frame.add(menuPanel);
 				frame.repaint();
-				
+
 				if (opciones.getProperty("musica").equals("Si")) {
 					player = new MusicPlayer(MAIN_THEME);
 					player.play();
 				}
 			}
 			if (e.getKeyCode() == KeyEvent.VK_UP) {
-				bird.jump();
-				reproducir(WINGS_SOUND);
-			} else if (e.getKeyCode() == KeyEvent.VK_SPACE) {
-				paused = false;
+				if (!game.isPaused()) {
+					game.jump();
+					reproducir(WINGS_SOUND);
+				} else {
+					game.setPaused(false);
+				}
 			}
 		} else if (inRanking) {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
@@ -372,7 +281,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 				if (optionsPanel.canExit()) {
 					loadLanguage();
-					
+
 					if (opciones.getProperty("musica").equals("Si")) {
 						if (player == null) {
 							player = new MusicPlayer(MAIN_THEME);
@@ -433,7 +342,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 				case 0:
 					frame.remove(gameOverPanel);
 					inGameOver = false;
-					t.stop();
+					// t.stop();
 					go();
 					break;
 				case 1:
@@ -442,7 +351,7 @@ public class FlappyBird implements ActionListener, KeyListener {
 					frame.add(menuPanel);
 					frame.repaint();
 					inMenu = true;
-					
+
 					if (opciones.getProperty("musica").equals("Si")) {
 						player = new MusicPlayer(MAIN_THEME);
 						player.play();
@@ -450,7 +359,6 @@ public class FlappyBird implements ActionListener, KeyListener {
 					break;
 				case 2:
 					frame.dispose();
-					t.stop();
 					break;
 				default:
 					break;
@@ -467,17 +375,13 @@ public class FlappyBird implements ActionListener, KeyListener {
 	public void keyTyped(KeyEvent e) {
 
 	}
-	
-	public void setSpeedFPS(int delay) {
-		t.setDelay(delay);
-	}
-
-	public boolean paused() {
-		return paused;
-	}
 
 	public void reproducir(String mp3) {
 		MusicPlayer player = new MusicPlayer(mp3);
 		player.play();
+	}
+
+	public JFrame getFrame() {
+		return frame;
 	}
 }
