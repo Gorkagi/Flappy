@@ -22,24 +22,25 @@ public class Prueba {
 		Firebase firebase = new Firebase( firebase_baseUrl );
 				
 		// "PUT" (test-map into a sub-node off of the fb4jDemo-root)
-		/*Map<String, Object> dataMap = new LinkedHashMap<String, Object>();
-		dataMap.put( "GOR", "5000" );
-		dataMap.put( "JON", "3050" );
-		dataMap.put( "AAA", "2050" );
-		dataMap.put( "BBB", "1050" );
-		dataMap.put( "CCC", "0050" );
-		*/
-		// FirebaseResponse response = firebase.put( "TOP-5", dataMap );
-		//System.out.println( "\n\nResult of PUT (for the test-PUT):\n" + response );
-		// System.out.println("\n");
+		Map<String, Object> dataMap = new LinkedHashMap<String, Object>();
+		dataMap.put( "3000", "GOR" );
+		dataMap.put( "500", "BBB" );
+		dataMap.put( "5000", "JON" );
+		//dataMap.put( "500", "BBB" );
+		//dataMap.put( "CCC", "0050" );
+		
+		FirebaseResponse response = firebase.put( "TOP-5", dataMap );
+		System.out.println( "\n\nResult of PUT (for the test-PUT):\n" + response );
+		System.out.println("\n");
 		
 		
 		// "GET" (the test-PUT)
+		/*
 		FirebaseResponse response = firebase.get( "TOP-5" );
 		
 		Map<String, Object> responseMap = response.getBody();
 		System.out.println(responseMap.get("JON"));
-	
+		*/
 	}
 
 }
