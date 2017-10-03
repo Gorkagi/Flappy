@@ -151,13 +151,14 @@ public class FlappyBird implements KeyListener {
 		frame.setVisible(true);
 	}
 
-	public void gameOver() {
+	public void gameOver(int score) {
 		if (frame == null) {
 			frame = new JFrame("Flappy");
 			frame.setResizable(false);
 		}
 
 		gameOverPanel = new GameOverPanel();
+		gameOverPanel.setScore(score);
 		frame.remove(game.getGamePanel());
 		frame.add(gameOverPanel);
 		frame.repaint();

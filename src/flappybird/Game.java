@@ -85,6 +85,9 @@ public class Game extends Thread {
 						rects.add(r);
 						rects.add(r2);
 					}
+					
+					scroll++;
+					score++;
 
 					ArrayList<Rectangle> toRemove = new ArrayList<Rectangle>();
 					boolean game = true;
@@ -95,15 +98,13 @@ public class Game extends Thread {
 						}
 						if (r.contains(bird.x, bird.y)) {
 							fb.reproducir(FlappyBird.COLISION_SOUND);
-							fb.gameOver();
+							fb.gameOver(score);
 
 							game = false;
 							playing = false;
 						}
 					}
 					rects.removeAll(toRemove);
-					scroll++;
-					score++;
 
 					if (bird.y > FlappyBird.HEIGHT || bird.y + bird.RAD < 0) {
 						game = false;

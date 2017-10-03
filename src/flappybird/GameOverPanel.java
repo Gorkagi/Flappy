@@ -11,14 +11,15 @@ import java.util.Properties;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
 
-public class GameOverPanel extends JPanel{
+public class GameOverPanel extends JPanel {
 
 	private Font titleFont, menuFont;
 	private Image buttonBack;
 	private Image gameOver;
 	private Image buttonBackSelected;
 	private int menuPos = 0;
-	
+	private int score = 0;
+
 	private Properties idioma;
 
 	public GameOverPanel() {
@@ -34,7 +35,7 @@ public class GameOverPanel extends JPanel{
 			e.printStackTrace();
 		}
 	}
-	
+
 	public boolean moveUp() {
 		if (menuPos > 0) {
 			menuPos--;
@@ -43,7 +44,7 @@ public class GameOverPanel extends JPanel{
 		}
 		return false;
 	}
-	
+
 	public boolean moveDown() {
 		if (menuPos < 2) {
 			menuPos++;
@@ -52,13 +53,13 @@ public class GameOverPanel extends JPanel{
 		}
 		return false;
 	}
-	
+
 	public int getMenuPos() {
 		return this.menuPos;
 	}
 
 	@Override
-	public void paintComponent(Graphics g) {		
+	public void paintComponent(Graphics g) {
 		boolean pos0 = false;
 		boolean pos1 = false;
 		boolean pos2 = false;
@@ -120,11 +121,18 @@ public class GameOverPanel extends JPanel{
 	private void paintMenu(Graphics g) {
 		g.fillRect(0, 0, 600, 600);
 		g.setFont(titleFont);
-		g.drawImage(gameOver, 175, 0, 250, 260, null);
-		g.setColor(new Color(255,25,30));
-		g.drawString("Game", 125, 300);
-		g.drawString("Over", 325, 300);
+		g.drawImage(gameOver, 188, 0, 225, 234, null);
+		g.setColor(new Color(255, 25, 30));
+		g.drawString("Game", 125, 275);
+		g.drawString("Over", 325, 275);
+		g.setColor(new Color(255, 255, 255, 200));
+		g.drawString("Puntuacion", 45, 320);
+		g.drawString(String.valueOf(score), 445, 320);
 		g.setColor(new Color(255, 255, 255));
 		g.setFont(menuFont);
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 }
