@@ -126,7 +126,7 @@ public class GameOverPanel extends JPanel {
 		g.drawString("Game", 125, 275);
 		g.drawString("Over", 325, 275);
 		g.setColor(new Color(255, 255, 255, 200));
-		g.drawString("Puntuacion", 45, 320);
+		g.drawString(idioma.getProperty("puntuacion"), 45, 320);
 		g.drawString(String.valueOf(score), 445, 320);
 		g.setColor(new Color(255, 255, 255));
 		g.setFont(menuFont);
