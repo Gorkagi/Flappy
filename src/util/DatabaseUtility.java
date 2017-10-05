@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import error.FirebaseException;
+import error.JacksonUtilityException;
 import model.FirebaseResponse;
 import service.Firebase;
 
@@ -25,5 +26,10 @@ public class DatabaseUtility {
 		Map<String, Object> responseMap = response.getBody();
 		
 		return responseMap;
+	}
+	
+	static public void updateDataTop5(Map<String, Object> dataMap) throws UnsupportedEncodingException, JacksonUtilityException, FirebaseException {
+		FirebaseResponse response = firebase.put( "TOP-5", dataMap );
+		System.out.println( "Response:" + response );
 	}
 }
