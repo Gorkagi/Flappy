@@ -13,7 +13,6 @@ import service.Firebase;
 public class Prueba {
 
 	public static void main(String[] args) throws FirebaseException, JsonParseException, JsonMappingException, IOException, JacksonUtilityException {
-
 		
 		// get the base-url (ie: 'http://gamma.firebase.com/username')
 		String firebase_baseUrl = "https://flappy-3fdd8.firebaseio.com/";
