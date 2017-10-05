@@ -25,6 +25,8 @@ public class DatabaseUtility {
 		FirebaseResponse response = firebase.get( "TOP-5" );		
 		Map<String, Object> responseMap = response.getBody();
 		
+		System.out.println("Retrieve: "+ response.getBody());
+		
 		return responseMap;
 	}
 	
