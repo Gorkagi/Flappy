@@ -187,20 +187,22 @@ public class CongratsPanel extends JPanel {
 		Map<String, Object> rankingParaSubir = new HashMap<>();
 		String name = "" + letra0 + letra1 + letra2;
 
+		int i = 0;
 		for (Entry<String, Object> entry : ranking.entrySet()) {
 			String nombre = entry.getValue().toString().split(":")[0];
 			Integer puntuacion = Integer.valueOf(entry.getValue().toString().split(":")[1]);
-			mapa.put(nombre, puntuacion);
+			mapa.put(nombre+i, puntuacion);
+			i++;
 		}
 
-		mapa.put(name, score);
+		mapa.put(name+i, score);
 
 		mapaOrdenado = sortByValue(mapa);
 
-		int i = 0;
+		i = 0;
 		char letra = 'A';
 		for (Entry<String, Integer> entry : mapaOrdenado.entrySet()) {
-			rankingParaSubir.put(String.valueOf(letra), entry.getKey() + ":" + entry.getValue());
+			rankingParaSubir.put(String.valueOf(letra), entry.getKey().substring(0, 3) + ":" + entry.getValue());
 			i++;
 			letra++;
 			if (i == 5) {
