@@ -6,11 +6,24 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+
+import error.FirebaseException;
+import error.JacksonUtilityException;
+import util.DatabaseUtility;
 
 public class CongratsPanel extends JPanel {
 
@@ -21,14 +34,28 @@ public class CongratsPanel extends JPanel {
 	private Image arrowUpSelected;
 	private Image arrowDownSelected;
 	private int menuPos = 0;
+	private int saveNotSavePos = 0;
+	private int score = 0;
+	private Map<String, Object> ranking;
+
+	private char letra0 = 'A';
+	private char letra1 = 'A';
+	private char letra2 = 'A';
+	private ArrayList<String> saveNotSave;
 
 	private Properties idioma;
 
-	public CongratsPanel() {
+	public CongratsPanel(int score, Map<String, Object> ranking) {
 		titleFont = new Font("8BIT WONDER", Font.BOLD, 34);
 		textFont = new Font("8BIT WONDER", Font.BOLD, 20);
 		optionsFont = new Font("8BIT WONDER", Font.BOLD, 24);
+		saveNotSave = new ArrayList<>();
 		idioma = FlappyBird.idioma;
+		saveNotSave.add(idioma.getProperty("guardar"));
+		saveNotSave.add(idioma.getProperty("noGuardar"));
+
+		this.score = score;
+		this.ranking = ranking;
 
 		try {
 			menuBack = ImageIO.read(new File("Congrats.jpg"));
@@ -39,6 +66,173 @@ public class CongratsPanel extends JPanel {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public boolean moveUp() {
+		switch (menuPos) {
+		case 0:
+			letra0 = charUp(letra0);
+			break;
+		case 1:
+			letra1 = charUp(letra1);
+			break;
+		case 2:
+			letra2 = charUp(letra2);
+			break;
+		case 3:
+			try {
+				saveNotSave.get(saveNotSavePos - 1);
+				saveNotSavePos--;
+			} catch (IndexOutOfBoundsException e) {
+				saveNotSavePos = saveNotSave.size() - 1;
+			}
+			break;
+		default:
+			break;
+		}
+
+		this.repaint();
+		return true;
+	}
+
+	public boolean moveDown() {
+		switch (menuPos) {
+		case 0:
+			letra0 = charDown(letra0);
+			break;
+		case 1:
+			letra1 = charDown(letra1);
+			break;
+		case 2:
+			letra2 = charDown(letra2);
+			break;
+		case 3:
+			try {
+				saveNotSave.get(saveNotSavePos + 1);
+				saveNotSavePos++;
+			} catch (IndexOutOfBoundsException e) {
+				saveNotSavePos = 0;
+			}
+			break;
+		default:
+			break;
+		}
+
+		this.repaint();
+		return true;
+	}
+
+	public boolean moveLeft() {
+		if (menuPos > 0) {
+			menuPos--;
+			this.repaint();
+			return true;
+		}
+		return false;
+	}
+
+	public boolean moveRight() {
+		if (menuPos < 3) {
+			menuPos++;
+			this.repaint();
+			return true;
+		}
+		return false;
+	}
+
+	public char charUp(char letra) {
+		if (letra == 'A') {
+			letra = '9';
+		} else if (letra == '0') {
+			letra = 'Z';
+		} else {
+			letra--;
+		}
+		return letra;
+	}
+
+	public char charDown(char letra) {
+		if (letra == 'Z') {
+			letra = '0';
+		} else if (letra == '9') {
+			letra = 'A';
+		} else {
+			letra++;
+		}
+		return letra;
+	}
+
+	public boolean canEnter() {
+		if (menuPos == 3) {
+			if (saveNotSavePos == 0) {
+				uploadNewRanking();
+			}
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean goToMenu() {
+		if (saveNotSavePos == 0) {
+			return false;
+		} else {
+			return true;
+		}
+	}
+
+	private void uploadNewRanking() {
+		Map<String, Integer> mapa = new HashMap<>();
+		Map<String, Integer> mapaOrdenado;
+		Map<String, Object> rankingParaSubir = new HashMap<>();
+		String name = "" + letra0 + letra1 + letra2;
+
+		for (Entry<String, Object> entry : ranking.entrySet()) {
+			String nombre = entry.getValue().toString().split(":")[0];
+			Integer puntuacion = Integer.valueOf(entry.getValue().toString().split(":")[1]);
+			mapa.put(nombre, puntuacion);
+		}
+
+		mapa.put(name, score);
+
+		mapaOrdenado = sortByValue(mapa);
+
+		int i = 0;
+		char letra = 'A';
+		for (Entry<String, Integer> entry : mapaOrdenado.entrySet()) {
+			rankingParaSubir.put(String.valueOf(letra), entry.getKey() + ":" + entry.getValue());
+			i++;
+			letra++;
+			if (i == 5) {
+				break;
+			}
+		}
+
+		try {
+			DatabaseUtility.updateDataTop5(rankingParaSubir);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (JacksonUtilityException e) {
+			e.printStackTrace();
+		} catch (FirebaseException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
+		List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(map.entrySet());
+		Collections.sort(list, new Comparator<Map.Entry<K, V>>() {
+			public int compare(Map.Entry<K, V> o1, Map.Entry<K, V> o2) {
+				return (o2.getValue()).compareTo(o1.getValue());
+			}
+		});
+
+		Map<K, V> result = new LinkedHashMap<K, V>();
+		for (Map.Entry<K, V> entry : list) {
+			result.put(entry.getKey(), entry.getValue());
+		}
+		return result;
 	}
 
 	@Override
@@ -78,18 +272,6 @@ public class CongratsPanel extends JPanel {
 		paintWord3(g, pos2);
 
 		paintSave(g, pos3);
-
-		// Opción música
-		// paintMusicOption(g, pos0);
-
-		// Opción personaje
-		// paintCharacterOption(g, pos1);
-
-		// Opción idioma
-		// paintLanguageOption(g, pos2);
-
-		// Botón guardar
-		// paintSaveButton(g, pos3);
 	}
 
 	private void paintMain(Graphics g) {
@@ -98,10 +280,10 @@ public class CongratsPanel extends JPanel {
 		g.setColor(new Color(255, 255, 255));
 		g.drawString(idioma.getProperty("enhorabuena"), 100, 50);
 	}
-	
+
 	private void paintScore(Graphics g) {
 		g.drawString(idioma.getProperty("puntuacion"), 100, 175);
-		g.drawString(String.valueOf(180), 400, 175);
+		g.drawString(String.valueOf(score), 400, 175);
 	}
 
 	private void paintCongratsText(Graphics g) {
@@ -124,7 +306,7 @@ public class CongratsPanel extends JPanel {
 		}
 
 		g.setFont(optionsFont);
-		g.drawString("A", 75, 400);
+		g.drawString(String.valueOf(letra0), 75, 400);
 	}
 
 	private void paintWord2(Graphics g, boolean selected) {
@@ -138,7 +320,7 @@ public class CongratsPanel extends JPanel {
 			g.drawImage(arrowDown, 149, 412, 25, 25, null);
 		}
 
-		g.drawString("A", 150, 400);
+		g.drawString(String.valueOf(letra1), 150, 400);
 	}
 
 	private void paintWord3(Graphics g, boolean selected) {
@@ -152,7 +334,7 @@ public class CongratsPanel extends JPanel {
 			g.drawImage(arrowDown, 224, 412, 25, 25, null);
 		}
 
-		g.drawString("A", 225, 400);
+		g.drawString(String.valueOf(letra2), 225, 400);
 	}
 
 	private void paintSave(Graphics g, boolean selected) {
@@ -166,7 +348,7 @@ public class CongratsPanel extends JPanel {
 			g.drawImage(arrowDown, 398, 412, 25, 25, null);
 		}
 
-		g.drawString(idioma.getProperty("guardar"), 325, 400);
+		g.drawString(saveNotSave.get(saveNotSavePos), 325, 400);
 	}
 
 }

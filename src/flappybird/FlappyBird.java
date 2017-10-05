@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.swing.JFrame;
@@ -44,6 +45,7 @@ public class FlappyBird implements KeyListener {
 	private InstructionsPanel instructionsPanel;
 	private OptionsPanel optionsPanel;
 	private GameOverPanel gameOverPanel;
+	private CongratsPanel congratsPanel;
 	private Game game;
 
 	private boolean inMenu;
@@ -52,6 +54,7 @@ public class FlappyBird implements KeyListener {
 	private boolean inInstructions = false;
 	private boolean inOptions = false;
 	private boolean inGameOver = false;
+	private boolean inCongrats = false;
 
 	public static Properties opciones = new Properties();
 	public static Properties idioma = new Properties();
@@ -170,6 +173,26 @@ public class FlappyBird implements KeyListener {
 		inGame = false;
 		game.setPaused(true);
 		inGameOver = true;
+
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setVisible(true);
+	}
+	
+	public void congratsRanking(int score, Map<String, Object> ranking) {
+		if (frame == null) {
+			frame = new JFrame("Flappy");
+			frame.setResizable(false);
+		}
+
+		congratsPanel = new CongratsPanel(score, ranking);
+		frame.remove(game.getGamePanel());
+		frame.add(congratsPanel);
+		frame.repaint();
+
+		inGame = false;
+		game.setPaused(true);
+		inCongrats = true;
 
 		frame.setSize(WIDTH, HEIGHT);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -347,7 +370,6 @@ public class FlappyBird implements KeyListener {
 				case 0:
 					frame.remove(gameOverPanel);
 					inGameOver = false;
-					// t.stop();
 					go();
 					break;
 				case 1:
@@ -369,6 +391,56 @@ public class FlappyBird implements KeyListener {
 					break;
 				}
 				inGameOver = false;
+			}
+		} else if (inCongrats) {
+			if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if (congratsPanel.canEnter()) {
+					reproducir(SELECT_SOUND);
+					
+					if (congratsPanel.goToMenu()) {
+						frame.remove(congratsPanel);
+						frame.add(menuPanel);
+						frame.repaint();
+						inMenu = true;
+
+						if (opciones.getProperty("musica").equals("Si")) {
+							player = new MusicPlayer(MAIN_THEME);
+							player.play();
+						}
+					} else {
+						rankingPanel = new RankingPanel();
+						frame.remove(congratsPanel);
+						frame.add(rankingPanel);
+						frame.repaint();
+
+						inRanking = true;
+
+						frame.setSize(WIDTH, HEIGHT);
+						frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+						frame.setVisible(true);
+					}
+					inCongrats = false;
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_UP) {
+				if (congratsPanel.moveUp()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+				if (congratsPanel.moveDown()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+				if (congratsPanel.moveLeft()) {
+					reproducir(MOVE_SOUND);
+				}
+			}
+			if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+				if (congratsPanel.moveRight()) {
+					reproducir(MOVE_SOUND);
+				}
 			}
 		}
 	}

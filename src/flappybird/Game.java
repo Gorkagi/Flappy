@@ -1,9 +1,14 @@
 package flappybird;
 
 import java.awt.Rectangle;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.JFrame;
+
+import error.FirebaseException;
+import util.DatabaseUtility;
 
 public class Game extends Thread {
 	private final double DESIRED_FPS = 60d;
@@ -14,8 +19,8 @@ public class Game extends Thread {
 	public final static String GAME2 = "audio/GameX2.mp3";
 
 	public final static int LVL1 = 0;
-	public final static int LVL2 = 350;
-	public final static int LVL3 = 600;
+	public final static int LVL2 = 1000;
+	public final static int LVL3 = 3000;
 
 	private FlappyBird fb;
 	private Bird bird;
@@ -46,7 +51,7 @@ public class Game extends Thread {
 		fb.getFrame().setSize(FlappyBird.WIDTH, FlappyBird.HEIGHT);
 		fb.getFrame().setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		fb.getFrame().setVisible(true);
-
+		
 		GameTimer timer = new GameTimer();
 		timer.start();
 
@@ -85,7 +90,7 @@ public class Game extends Thread {
 						rects.add(r);
 						rects.add(r2);
 					}
-					
+
 					scroll++;
 					score++;
 
@@ -98,8 +103,25 @@ public class Game extends Thread {
 						}
 						if (r.contains(bird.x, bird.y)) {
 							fb.reproducir(FlappyBird.COLISION_SOUND);
-							fb.gameOver(score);
+							
+							Map<String, Object> ranking = null;
 
+							try {
+								ranking = DatabaseUtility.retrieveDataTop5();
+							} catch (UnsupportedEncodingException e) {
+								e.printStackTrace();
+							} catch (FirebaseException e) {
+								e.printStackTrace();
+							}
+
+							int rankingLowerScore = getRankingLowerScore(ranking);
+							
+							if(score > rankingLowerScore) {
+								fb.congratsRanking(score, ranking);
+							} else {
+								fb.gameOver(score);
+							}
+							
 							game = false;
 							playing = false;
 						}
@@ -135,6 +157,10 @@ public class Game extends Thread {
 
 	}
 
+	private int getRankingLowerScore(Map<String, Object> ranking) {
+		return Integer.valueOf(ranking.get("E").toString().split(":")[1]);
+	}
+
 	public int getScore() {
 		return score;
 	}
@@ -161,7 +187,7 @@ public class Game extends Thread {
 
 	public void killPlayer() {
 		playing = false;
-		
+
 		if (player != null) {
 			if (player.isAlive()) {
 				player.close();
