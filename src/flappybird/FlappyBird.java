@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import util.DatabaseUtility;
+
 /**
  *
  * @author User
@@ -73,6 +75,8 @@ public class FlappyBird implements KeyListener {
 	}
 
 	public void menu() {
+		
+		new DatabaseUtility();
 
 		if (frame == null) {
 			frame = new JFrame("Flappy");
